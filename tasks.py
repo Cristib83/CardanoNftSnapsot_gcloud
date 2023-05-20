@@ -5,6 +5,10 @@ from tempfile import NamedTemporaryFile
 from my_celery import celery_app
 import logging
 
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 blockfrost_api_key = os.environ.get("BLOCKFROST_API_KEY")
 base_api = "https://cardano-mainnet.blockfrost.io/api/v0"
 

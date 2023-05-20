@@ -8,7 +8,7 @@ from my_celery import celery_app
 
 app = Flask(__name__, static_url_path='/static')
 
-blockfrost_api_key = "mainnetrrIj9ITzGOUadlPSyj1D700VwSQhAmle"
+blockfrost_api_key = os.environ.get('BLOCKFROST_API_KEY')
 base_api = "https://cardano-mainnet.blockfrost.io/api/v0"
 
 @celery_app.task
