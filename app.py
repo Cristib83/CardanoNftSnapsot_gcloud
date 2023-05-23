@@ -1,24 +1,16 @@
 import csv
 import os
 import requests
-from flask import Flask, render_template, request, send_file, jsonify
-from my_celery import celery_app
+from flask import Flask, render_template, request, send_file
 from io import StringIO
-import logging
-import redis
-
 
 app = Flask(__name__, static_url_path='/static')
 
 # Get the Blockfrost API key from the environment variable
-blockfrost_api_key = "mainnetrrIj9ITzGOUadlPSyj1D700VwSQhAmle" 
-#os.environ.get("BLOCKFROST_API_KEY")
-
+blockfrost_api_key = os.environ.get("BLOCKFROST_API_KEY")
 # Base API URL
 base_api = "https://cardano-mainnet.blockfrost.io/api/v0"
 
-# Define a Celery task using the celery_app decorator
-@celery_app.task
 def generate_csv(policy_id):
     try:
         all_assets = []
@@ -67,7 +59,6 @@ def generate_csv(policy_id):
         # Handle the exception appropriately
         raise
 
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -75,27 +66,15 @@ def index():
 @app.route('/generate_file', methods=['POST'])
 def generate_file():
     policy_id = request.form['policy_id']
-    result = generate_csv.delay(policy_id)
-    return jsonify({'task_id': result.id})
+    csv_data = generate_csv(policy_id)
 
-
-
-@app.route('/download_file/<task_id>')
-def download_file(task_id):
-    result = generate_csv.AsyncResult(task_id)
-    if result.ready():
-        csv_data = result.get()
-
-        # Send the CSV data as a download attachment
-        return send_file(
-            StringIO(csv_data),
-            as_attachment=True,
-            attachment_filename='data.csv',
-            mimetype='text/csv'
-        )
-    else:
-        return "Processing...", 202
-
+    # Send the CSV data as a download attachment
+    return send_file(
+        StringIO(csv_data),
+        as_attachment=True,
+        attachment_filename='data.csv',
+        mimetype='text/csv'
+    )
 
 if __name__ == '__main__':
     # Run the Flask app
