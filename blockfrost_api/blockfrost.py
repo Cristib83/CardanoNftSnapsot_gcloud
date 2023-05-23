@@ -4,7 +4,8 @@ import string
 import os
 
 
-blockfrost_api_key = os.environ.get('BLOCKFROST_API_KEY')
+blockfrost_api_key = "mainnetrrIj9ITzGOUadlPSyj1D700VwSQhAmle"
+#os.environ.get("BLOCKFROST_API_KEY")
 project_policy_id = input('policy_id: ')
 
 base_api = "https://cardano-mainnet.blockfrost.io/api/v0"
